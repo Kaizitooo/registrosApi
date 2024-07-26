@@ -1,0 +1,30 @@
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+const arquivoJSX = path.join(__dirname, 'eu-sou-mobile', 'teste.jsx');
+
+http.createServer((req, res) => {
+    fs.readFile(arquivoJSX, 'utf8', (err, data) => {
+        if (err) {
+            res.writeHead(500, {'Content-Type': 'text/plain'});
+            res.end('Erro ao ler o arquivo.');
+            return;
+        }
+
+        // Expressão regular para extrair o conteúdo da tag <h1>
+        const regex = /<h1>\s*([\s\S]*?)\s*<\/h1>/;
+        const match = data.match(regex);
+
+        let responseText = 'Conteúdo não encontrado';
+
+        if (match && match[1]) {
+            responseText = match[1].trim();
+        }
+
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.end(responseText);
+    });
+}).listen(6060, () => {
+    console.log('Servidor rodando na porta 6070');
+});
